@@ -9,6 +9,8 @@ pub fn start() {
     log::set_logger(&DEFAULT_LOGGER).unwrap();
     log::set_max_level(log::LevelFilter::Info);
 
+    let bytes = include_bytes!("NotoSansJP-Regular.otf");
+
     let document = web_sys::window().unwrap().document().unwrap();
     let canvas = document.get_element_by_id("canvas").unwrap();
     let canvas: web_sys::HtmlCanvasElement = canvas
