@@ -25,7 +25,7 @@ pub fn start() {
 
     info!("{canvas:?}");
 
-    draw_text(&context, "あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。", 32.0);
+    draw_text(&context, "あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、\nうつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。", 32.0);
 }
 
 struct TestOutlineBuilder<'a> {
@@ -82,35 +82,38 @@ fn draw_text(context: &web_sys::CanvasRenderingContext2d, text: &str, size: f64)
 
     let scale = size / face.units_per_em() as f64;
 
-    let mut rustybuzz_face = rustybuzz::Face::from_slice(font_data, 0).unwrap();
-    let mut buffer = rustybuzz::UnicodeBuffer::new();
-    buffer.push_str(&text);
+    let rustybuzz_face = rustybuzz::Face::from_slice(font_data, 0).unwrap();
 
-    let glyph_buffer = rustybuzz::shape(&rustybuzz_face, &[], buffer);
+    context.translate(20.0, 20.0);
+    context.translate(0.0, size);
 
-    info!(
-        "{}",
-        glyph_buffer.serialize(&rustybuzz_face, rustybuzz::SerializeFlags::default())
-    );
+    for (line_num, line) in text.lines().enumerate() {
+        let mut buffer = rustybuzz::UnicodeBuffer::new();
+        buffer.push_str(&line);
+        let glyph_buffer = rustybuzz::shape(&rustybuzz_face, &[], buffer);
 
-    context.translate(0.0, 100.0);
-    context.scale(1.0, -1.0);
+        context.save();
+        context.scale(1.0, -1.0);
 
-    for i in 0..glyph_buffer.len() {
-        let glyph = glyph_buffer.glyph_infos()[i];
-        let pos = glyph_buffer.glyph_positions()[i];
+        for i in 0..glyph_buffer.len() {
+            let glyph = glyph_buffer.glyph_infos()[i];
+            let pos = glyph_buffer.glyph_positions()[i];
 
-        info!("{:?}", pos);
+            info!("{:?}", pos);
 
-        context.begin_path();
+            context.begin_path();
 
-        face.outline_glyph(
-            ttf_parser::GlyphId(glyph.glyph_id as u16),
-            &mut TestOutlineBuilder { context, scale },
-        );
+            face.outline_glyph(
+                ttf_parser::GlyphId(glyph.glyph_id as u16),
+                &mut TestOutlineBuilder { context, scale },
+            );
 
-        context.fill();
+            context.fill();
 
-        context.translate(pos.x_advance as f64 * scale, 0.0);
+            context.translate(pos.x_advance as f64 * scale, 0.0);
+        }
+
+        context.restore();
+        context.translate(0.0, size * 1.5);
     }
 }
