@@ -1,7 +1,6 @@
 function App() {
   return (
-    <div>
-      <h1 className="text-red-500">Hello</h1>
+    <div className="p-4">
       <canvas
         id="canvas"
         width="2000"
