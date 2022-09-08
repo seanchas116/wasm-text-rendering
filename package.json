@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "wasm:build": "cd wasm && wasm-pack build --target web --release"
   },
   "dependencies": {
     "react": "^18.2.0",

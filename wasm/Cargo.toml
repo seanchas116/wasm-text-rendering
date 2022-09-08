@@ -1,8 +1,24 @@
 [package]
+edition = "2021"
 name = "wasm"
 version = "0.1.0"
-edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib"]
 
 [dependencies]
+js-sys = "0.3.58"
+log = "0.4.17"
+wasm-bindgen = "0.2.81"
+wasm-bindgen-console-logger = "0.1.1"
+
+[dependencies.web-sys]
+features = [
+  'CanvasRenderingContext2d',
+  'Document',
+  'Element',
+  'HtmlCanvasElement',
+  'Window',
+  "console",
+]
+version = "0.3.58"
