@@ -4,8 +4,8 @@ function App() {
       <canvas
         id="canvas"
         width="2000"
-        height="200"
-        className="w-[1000px] h-[100px] border-2 border-black"
+        height="800"
+        className="w-[1000px] h-[400px] border-2 border-black"
       />
     </div>
   );

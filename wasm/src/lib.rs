@@ -25,7 +25,7 @@ pub fn start() {
 
     info!("{canvas:?}");
 
-    draw_text(&context, "あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、\nうつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。", 32.0);
+    draw_text(&context, "あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、\nうつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。\nLorem ipsum dolor sit amet, consectetur adipiscing elit,\nsed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", 48.0);
 }
 
 struct TestOutlineBuilder<'a> {
