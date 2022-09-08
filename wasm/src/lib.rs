@@ -25,43 +25,62 @@ pub fn start() {
 
     info!("{canvas:?}");
 
-    draw_text(&context, "あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。");
+    draw_text(&context, "あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。", 32.0);
 }
 
 struct TestOutlineBuilder<'a> {
     context: &'a web_sys::CanvasRenderingContext2d,
+    scale: f64,
 }
 
 impl<'a> ttf_parser::OutlineBuilder for TestOutlineBuilder<'a> {
     fn move_to(&mut self, x: f32, y: f32) {
-        self.context.move_to(x as f64, y as f64);
+        info!("move_to: {}, {}", x, y);
+        self.context
+            .move_to(x as f64 * self.scale, y as f64 * self.scale);
     }
 
     fn line_to(&mut self, x: f32, y: f32) {
-        self.context.line_to(x as f64, y as f64);
+        info!("line_to: {}, {}", x, y);
+        self.context
+            .line_to(x as f64 * self.scale, y as f64 * self.scale);
     }
 
     fn quad_to(&mut self, x1: f32, y1: f32, x: f32, y: f32) {
-        self.context
-            .quadratic_curve_to(x1 as f64, y1 as f64, x as f64, y as f64);
+        info!("quad_to: {}, {}, {}, {}", x1, y1, x, y);
+        self.context.quadratic_curve_to(
+            x1 as f64 * self.scale,
+            y1 as f64 * self.scale,
+            x as f64 * self.scale,
+            y as f64 * self.scale,
+        );
     }
 
     fn curve_to(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, x: f32, y: f32) {
+        info!("curve_to: {}, {}, {}, {}, {}, {}", x1, y1, x2, y2, x, y);
         self.context.bezier_curve_to(
-            x1 as f64, y1 as f64, x2 as f64, y2 as f64, x as f64, y as f64,
+            x1 as f64 * self.scale,
+            y1 as f64 * self.scale,
+            x2 as f64 * self.scale,
+            y2 as f64 * self.scale,
+            x as f64 * self.scale,
+            y as f64 * self.scale,
         );
     }
 
     fn close(&mut self) {
+        info!("close");
         self.context.close_path();
     }
 }
 
-fn draw_text(context: &web_sys::CanvasRenderingContext2d, text: &str) {
+fn draw_text(context: &web_sys::CanvasRenderingContext2d, text: &str, size: f64) {
     let font_data = include_bytes!("NotoSansJP-Regular.otf");
 
     let face = ttf_parser::Face::from_slice(font_data, 0).unwrap();
-    info!("face: {}", face.number_of_glyphs());
+    info!("units per em: {}", face.units_per_em());
+
+    let scale = size / face.units_per_em() as f64;
 
     let mut rustybuzz_face = rustybuzz::Face::from_slice(font_data, 0).unwrap();
     let mut buffer = rustybuzz::UnicodeBuffer::new();
@@ -75,7 +94,7 @@ fn draw_text(context: &web_sys::CanvasRenderingContext2d, text: &str) {
     );
 
     context.translate(0.0, 100.0);
-    context.scale(0.05, -0.05);
+    context.scale(1.0, -1.0);
 
     for i in 0..glyph_buffer.len() {
         let glyph = glyph_buffer.glyph_infos()[i];
@@ -83,13 +102,15 @@ fn draw_text(context: &web_sys::CanvasRenderingContext2d, text: &str) {
 
         info!("{:?}", pos);
 
+        context.begin_path();
+
         face.outline_glyph(
             ttf_parser::GlyphId(glyph.glyph_id as u16),
-            &mut TestOutlineBuilder { context },
+            &mut TestOutlineBuilder { context, scale },
         );
 
         context.fill();
 
-        context.translate(pos.x_advance as f64, 0.0);
+        context.translate(pos.x_advance as f64 * scale, 0.0);
     }
 }
