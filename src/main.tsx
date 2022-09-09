@@ -23,5 +23,5 @@ init().then(() => {
     "あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。\n" +
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
 
-  renderer.draw_text(text, 32, 48, 32, 32, 320);
+  renderer.drawText(text, 32, 48, 32, 32, 320);
 });

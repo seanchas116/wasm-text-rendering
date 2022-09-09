@@ -69,7 +69,7 @@ impl TextRenderer {
         }
     }
 
-    #[wasm_bindgen]
+    #[wasm_bindgen(js_name=drawText)]
     pub fn draw_text(
         &self,
         text: &str,
