@@ -27,10 +27,8 @@ pub fn start() {
 
     info!("{canvas:?}");
 
-    let text = "あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、\n\
-        うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。\n\
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit,\n\
-        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+    let text = "あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。\n\
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
 
-    draw_text(&context, text, 32.0);
+    draw_text(&context, text, 32.0, 48.0, 32.0, 32.0, 320.0);
 }

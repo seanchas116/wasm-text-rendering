@@ -47,17 +47,24 @@ impl<'a> ttf_parser::OutlineBuilder for TestOutlineBuilder<'a> {
     }
 }
 
-pub fn draw_text(context: &web_sys::CanvasRenderingContext2d, text: &str, size: f64) {
+pub fn draw_text(
+    context: &web_sys::CanvasRenderingContext2d,
+    text: &str,
+    font_size: f64,
+    line_height: f64,
+    x: f64,
+    y: f64,
+    width: f64,
+) {
     let font_data = include_bytes!("NotoSansJP-Regular.otf");
 
     let face = ttf_parser::Face::from_slice(font_data, 0).unwrap();
 
-    let scale = size / face.units_per_em() as f64;
+    let scale = font_size / face.units_per_em() as f64;
 
     let rustybuzz_face = rustybuzz::Face::from_slice(font_data, 0).unwrap();
 
-    context.translate(20.0, 20.0);
-    context.translate(0.0, size);
+    context.translate(x, y);
 
     let linebreaks: Vec<(usize, unicode_linebreak::BreakOpportunity)> =
         unicode_linebreak::linebreaks(text).collect();
@@ -78,12 +85,24 @@ pub fn draw_text(context: &web_sys::CanvasRenderingContext2d, text: &str, size: 
         buffer.push_str(span);
         let glyph_buffer = rustybuzz::shape(&rustybuzz_face, &[], buffer);
 
+        let span_width = glyph_buffer
+            .glyph_positions()
+            .iter()
+            .map(|info| info.x_advance)
+            .sum::<i32>() as f64
+            * scale;
+
+        if pos_x + span_width > width {
+            pos_x = 0.0;
+            pos_y += line_height;
+        }
+
         for i in 0..glyph_buffer.len() {
             let glyph = glyph_buffer.glyph_infos()[i];
             let pos = glyph_buffer.glyph_positions()[i];
 
             context.save();
-            context.translate(pos_x, pos_y);
+            context.translate(pos_x, pos_y + font_size);
             context.scale(1.0, -1.0);
 
             context.begin_path();
@@ -99,9 +118,9 @@ pub fn draw_text(context: &web_sys::CanvasRenderingContext2d, text: &str, size: 
             pos_x += pos.x_advance as f64 * scale;
         }
 
-        if (break_type == unicode_linebreak::BreakOpportunity::Mandatory) {
+        if break_type == unicode_linebreak::BreakOpportunity::Mandatory {
             pos_x = 0.0;
-            pos_y += size * 1.5;
+            pos_y += line_height;
         }
     }
 }
