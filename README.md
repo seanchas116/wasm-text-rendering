@@ -1,6 +1,12 @@
 # wasm-text-rendering
 
-Get glyph data and render text to a canvas using [rustybuzz](https://github.com/RazrFalcon/rustybuzz) and [ttf-parser](https://github.com/RazrFalcon/ttf-parser)
+Get glyph data and render text to a canvas using Rust Wasm
+
+## Used libraries
+
+- [rustybuzz](https://github.com/RazrFalcon/rustybuzz) for text shaping
+- [ttf-parser](https://github.com/RazrFalcon/ttf-parser) for retrieving glyph outlines
+- [unicode-linebreak](https://github.com/axelf4/unicode-linebreak) for text wrapping
 
 ## Setup
 
