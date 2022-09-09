@@ -30,6 +30,6 @@ pub fn start() {
     let text = "あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。\n\
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
 
-    let text_renderer = TextRenderer::new(&context);
+    let text_renderer = TextRenderer::new(context);
     text_renderer.draw_text(text, 32.0, 48.0, 32.0, 32.0, 320.0);
 }

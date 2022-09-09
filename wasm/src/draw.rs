@@ -47,14 +47,14 @@ impl<'a> ttf_parser::OutlineBuilder for TestOutlineBuilder<'a> {
     }
 }
 
-pub struct TextRenderer<'a> {
-    context: &'a web_sys::CanvasRenderingContext2d,
-    font_face: ttf_parser::Face<'a>,
-    rustybuzz_face: rustybuzz::Face<'a>,
+pub struct TextRenderer {
+    context: web_sys::CanvasRenderingContext2d,
+    font_face: ttf_parser::Face<'static>,
+    rustybuzz_face: rustybuzz::Face<'static>,
 }
 
-impl<'a> TextRenderer<'a> {
-    pub fn new(context: &'a web_sys::CanvasRenderingContext2d) -> TextRenderer {
+impl TextRenderer {
+    pub fn new(context: web_sys::CanvasRenderingContext2d) -> TextRenderer {
         let font_data = include_bytes!("NotoSansJP-Regular.otf");
         let font_face = ttf_parser::Face::from_slice(font_data, 0).unwrap();
         let rustybuzz_face = rustybuzz::Face::from_slice(font_data, 0).unwrap();
@@ -122,7 +122,7 @@ impl<'a> TextRenderer<'a> {
                 self.font_face.outline_glyph(
                     ttf_parser::GlyphId(glyph.glyph_id as u16),
                     &mut TestOutlineBuilder {
-                        context: self.context,
+                        context: &self.context,
                         scale,
                     },
                 );
