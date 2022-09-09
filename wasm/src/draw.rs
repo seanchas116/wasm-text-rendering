@@ -98,7 +98,6 @@ impl TextRenderer {
             if span.ends_with("\n") {
                 span = &span[..span.len() - 1];
             }
-            info!("span: {:?}", span);
 
             let mut buffer = rustybuzz::UnicodeBuffer::new();
             buffer.push_str(span);
