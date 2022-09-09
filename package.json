@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "wasm:build": "cd wasm && wasm-pack build --target web --release"
+    "wasm:build": "cd wasm && wasm-pack build --target web --release",
+    "deploy": "bash deploy.sh"
   },
   "dependencies": {
     "react": "^18.2.0",
