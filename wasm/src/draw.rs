@@ -48,18 +48,6 @@ impl<'a> ttf_parser::OutlineBuilder for TestOutlineBuilder<'a> {
 }
 
 pub fn draw_text(context: &web_sys::CanvasRenderingContext2d, text: &str, size: f64) {
-    let linebreaks: Vec<(usize, unicode_linebreak::BreakOpportunity)> =
-        unicode_linebreak::linebreaks(text).collect();
-
-    let lines: Vec<Vec<&str>> = Vec::new();
-
-    let mut last_offset: usize = 0;
-    for (offset, break_type) in linebreaks {
-        let span = &text[last_offset..offset];
-        last_offset = offset;
-        info!("span: {}", span);
-    }
-
     let font_data = include_bytes!("NotoSansJP-Regular.otf");
 
     let face = ttf_parser::Face::from_slice(font_data, 0).unwrap();
@@ -71,17 +59,32 @@ pub fn draw_text(context: &web_sys::CanvasRenderingContext2d, text: &str, size: 
     context.translate(20.0, 20.0);
     context.translate(0.0, size);
 
-    for (line_num, line) in text.lines().enumerate() {
-        let mut buffer = rustybuzz::UnicodeBuffer::new();
-        buffer.push_str(&line);
-        let glyph_buffer = rustybuzz::shape(&rustybuzz_face, &[], buffer);
+    let linebreaks: Vec<(usize, unicode_linebreak::BreakOpportunity)> =
+        unicode_linebreak::linebreaks(text).collect();
 
-        context.save();
-        context.scale(1.0, -1.0);
+    let mut pos_x = 0.0;
+    let mut pos_y = 0.0;
+
+    let mut last_offset: usize = 0;
+    for (offset, break_type) in linebreaks {
+        let mut span = &text[last_offset..offset];
+        last_offset = offset;
+        if span.ends_with("\n") {
+            span = &span[..span.len() - 1];
+        }
+        info!("span: {:?}", span);
+
+        let mut buffer = rustybuzz::UnicodeBuffer::new();
+        buffer.push_str(span);
+        let glyph_buffer = rustybuzz::shape(&rustybuzz_face, &[], buffer);
 
         for i in 0..glyph_buffer.len() {
             let glyph = glyph_buffer.glyph_infos()[i];
             let pos = glyph_buffer.glyph_positions()[i];
+
+            context.save();
+            context.translate(pos_x, pos_y);
+            context.scale(1.0, -1.0);
 
             context.begin_path();
 
@@ -91,11 +94,14 @@ pub fn draw_text(context: &web_sys::CanvasRenderingContext2d, text: &str, size: 
             );
 
             context.fill();
+            context.restore();
 
-            context.translate(pos.x_advance as f64 * scale, 0.0);
+            pos_x += pos.x_advance as f64 * scale;
         }
 
-        context.restore();
-        context.translate(0.0, size * 1.5);
+        if (break_type == unicode_linebreak::BreakOpportunity::Mandatory) {
+            pos_x = 0.0;
+            pos_y += size * 1.5;
+        }
     }
 }
