@@ -8,6 +8,8 @@ function App() {
   useEffect(() => {
     const context = canvasRef.current?.getContext("2d")!;
 
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+
     renderer.current = new TextRenderer(context);
 
     const text =

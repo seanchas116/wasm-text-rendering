@@ -79,6 +79,8 @@ impl TextRenderer {
         y: f64,
         width: f64,
     ) {
+        self.context.save();
+
         let scale = font_size / self.font_face.units_per_em() as f64;
 
         self.context.translate(x, y);
@@ -143,5 +145,7 @@ impl TextRenderer {
                 pos_y += line_height;
             }
         }
+
+        self.context.restore();
     }
 }
