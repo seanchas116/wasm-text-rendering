@@ -1,5 +1,6 @@
 use log::info;
 use std::f64;
+use wasm_bindgen::prelude::*;
 
 struct TestOutlineBuilder<'a> {
     context: &'a web_sys::CanvasRenderingContext2d,
@@ -47,13 +48,16 @@ impl<'a> ttf_parser::OutlineBuilder for TestOutlineBuilder<'a> {
     }
 }
 
+#[wasm_bindgen]
 pub struct TextRenderer {
     context: web_sys::CanvasRenderingContext2d,
     font_face: ttf_parser::Face<'static>,
     rustybuzz_face: rustybuzz::Face<'static>,
 }
 
+#[wasm_bindgen]
 impl TextRenderer {
+    #[wasm_bindgen(constructor)]
     pub fn new(context: web_sys::CanvasRenderingContext2d) -> TextRenderer {
         let font_data = include_bytes!("NotoSansJP-Regular.otf");
         let font_face = ttf_parser::Face::from_slice(font_data, 0).unwrap();
@@ -65,6 +69,7 @@ impl TextRenderer {
         }
     }
 
+    #[wasm_bindgen]
     pub fn draw_text(
         &self,
         text: &str,
