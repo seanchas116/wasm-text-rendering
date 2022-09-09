@@ -59,7 +59,7 @@ pub struct TextRenderer {
 impl TextRenderer {
     #[wasm_bindgen(constructor)]
     pub fn new(context: web_sys::CanvasRenderingContext2d) -> TextRenderer {
-        let font_data = include_bytes!("NotoSansJP-Regular.otf");
+        let font_data = include_bytes!("NotoSerifJP-Regular.otf");
         let font_face = ttf_parser::Face::from_slice(font_data, 0).unwrap();
         let rustybuzz_face = rustybuzz::Face::from_slice(font_data, 0).unwrap();
         TextRenderer {
