@@ -30,12 +30,12 @@ function App() {
   }, [text, fontSize, width]);
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex gap-4 p-4">
       <canvas
         ref={canvasRef}
-        width="2000"
+        width="800"
         height="800"
-        className="w-[1000px] h-[400px] border-2 border-gray-900"
+        className="w-[400px] h-[400px] border-2 border-gray-900"
       />
       <div className="flex flex-col gap-2 ">
         <textarea
