@@ -4,41 +4,29 @@ use wasm_bindgen::prelude::*;
 
 struct TestOutlineBuilder<'a> {
     context: &'a web_sys::CanvasRenderingContext2d,
-    scale: f64,
 }
 
 impl<'a> ttf_parser::OutlineBuilder for TestOutlineBuilder<'a> {
     fn move_to(&mut self, x: f32, y: f32) {
         //info!("move_to: {}, {}", x, y);
-        self.context
-            .move_to(x as f64 * self.scale, y as f64 * self.scale);
+        self.context.move_to(x as f64, y as f64);
     }
 
     fn line_to(&mut self, x: f32, y: f32) {
         //info!("line_to: {}, {}", x, y);
-        self.context
-            .line_to(x as f64 * self.scale, y as f64 * self.scale);
+        self.context.line_to(x as f64, y as f64);
     }
 
     fn quad_to(&mut self, x1: f32, y1: f32, x: f32, y: f32) {
         //info!("quad_to: {}, {}, {}, {}", x1, y1, x, y);
-        self.context.quadratic_curve_to(
-            x1 as f64 * self.scale,
-            y1 as f64 * self.scale,
-            x as f64 * self.scale,
-            y as f64 * self.scale,
-        );
+        self.context
+            .quadratic_curve_to(x1 as f64, y1 as f64, x as f64, y as f64);
     }
 
     fn curve_to(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, x: f32, y: f32) {
         //info!("curve_to: {}, {}, {}, {}, {}, {}", x1, y1, x2, y2, x, y);
         self.context.bezier_curve_to(
-            x1 as f64 * self.scale,
-            y1 as f64 * self.scale,
-            x2 as f64 * self.scale,
-            y2 as f64 * self.scale,
-            x as f64 * self.scale,
-            y as f64 * self.scale,
+            x1 as f64, y1 as f64, x2 as f64, y2 as f64, x as f64, y as f64,
         );
     }
 
@@ -168,7 +156,6 @@ impl TextRenderer {
                     glyph_id,
                     &mut TestOutlineBuilder {
                         context: &self.context,
-                        scale: 1.0,
                     },
                 );
 
