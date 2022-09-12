@@ -155,7 +155,8 @@ impl TextRenderer {
                 self.context.scale(1.0, -1.0);
                 if vertical && vertical_orientation == unicode_vo::Orientation::Rotated {
                     self.context.rotate(-std::f64::consts::FRAC_PI_2);
-                    self.context.translate(-font_size, 0.0);
+                    self.context
+                        .translate(-font_size, -self.font_face.descender() as f64 * scale);
                 }
 
                 self.context.scale(scale, scale);
