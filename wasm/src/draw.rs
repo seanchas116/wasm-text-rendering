@@ -1,5 +1,5 @@
 use log::info;
-use std::f64;
+use std::{f64, str::FromStr};
 use wasm_bindgen::prelude::*;
 
 struct TestOutlineBuilder<'a> {
@@ -73,6 +73,7 @@ impl TextRenderer {
     pub fn draw_text(
         &self,
         text: &str,
+        vertical: bool,
         font_size: f64,
         line_height: f64,
         x: f64,
@@ -84,7 +85,11 @@ impl TextRenderer {
 
         let scale = font_size / self.font_face.units_per_em() as f64;
 
-        self.context.translate(x, y);
+        if vertical {
+            self.context.translate(x + width, y);
+        } else {
+            self.context.translate(x, y);
+        }
 
         let linebreaks: Vec<(usize, unicode_linebreak::BreakOpportunity)> =
             unicode_linebreak::linebreaks(text).collect();
@@ -102,18 +107,36 @@ impl TextRenderer {
 
             let mut buffer = rustybuzz::UnicodeBuffer::new();
             buffer.push_str(span);
+            if vertical {
+                buffer.set_direction(rustybuzz::Direction::TopToBottom);
+            }
+
             let glyph_buffer = rustybuzz::shape(&self.rustybuzz_face, &[], buffer);
 
-            let span_width = glyph_buffer
-                .glyph_positions()
-                .iter()
-                .map(|info| info.x_advance)
-                .sum::<i32>() as f64
-                * scale;
+            if vertical {
+                let span_height = glyph_buffer
+                    .glyph_positions()
+                    .iter()
+                    .map(|info| info.y_advance.abs())
+                    .sum::<i32>() as f64
+                    * scale;
 
-            if pos_x + span_width > width {
-                pos_x = 0.0;
-                pos_y += line_height;
+                if pos_y + span_height > height {
+                    pos_x -= line_height;
+                    pos_y = 0.0;
+                }
+            } else {
+                let span_width = glyph_buffer
+                    .glyph_positions()
+                    .iter()
+                    .map(|info| info.x_advance)
+                    .sum::<i32>() as f64
+                    * scale;
+
+                if pos_x + span_width > width {
+                    pos_x = 0.0;
+                    pos_y += line_height;
+                }
             }
 
             for i in 0..glyph_buffer.len() {
@@ -138,11 +161,17 @@ impl TextRenderer {
                 self.context.restore();
 
                 pos_x += pos.x_advance as f64 * scale;
+                pos_y -= pos.y_advance as f64 * scale;
             }
 
             if break_type == unicode_linebreak::BreakOpportunity::Mandatory {
-                pos_x = 0.0;
-                pos_y += line_height;
+                if vertical {
+                    pos_x -= line_height;
+                    pos_y = 0.0;
+                } else {
+                    pos_x = 0.0;
+                    pos_y += line_height;
+                }
             }
         }
 

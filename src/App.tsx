@@ -13,8 +13,9 @@ function App() {
   const [text, setText] = useState(defaultText);
 
   const [fontSize, setFontSize] = useState(32);
-  const [width, setWidth] = useState(320);
-  const [height, setHeight] = useState(320);
+  const [width, setWidth] = useState(640);
+  const [height, setHeight] = useState(640);
+  const [vertical, setVertical] = useState(false);
 
   useEffect(() => {
     contextRef.current = canvasRef.current?.getContext("2d")!;
@@ -26,9 +27,18 @@ function App() {
     const renderer = rendererRef.current;
     if (context && renderer) {
       context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-      renderer.drawText(text, fontSize, fontSize * 1.5, 32, 32, width, height);
+      renderer.drawText(
+        text,
+        vertical,
+        fontSize,
+        fontSize * 1.5,
+        32,
+        32,
+        width,
+        height
+      );
     }
-  }, [text, fontSize, width]);
+  }, [text, vertical, fontSize, width, height]);
 
   return (
     <div className="flex gap-4 p-4">
@@ -44,6 +54,14 @@ function App() {
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
+        <label className="flex gap-1 text-base text-gray-900">
+          <input
+            type="checkbox"
+            checked={vertical}
+            onChange={(e) => setVertical(e.target.checked)}
+          />
+          Vertical
+        </label>
         <label className="flex flex-col">
           <span className="text-sm text-gray-500">Font Size</span>
           <input
