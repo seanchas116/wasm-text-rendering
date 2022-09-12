@@ -14,6 +14,7 @@ function App() {
 
   const [fontSize, setFontSize] = useState(32);
   const [width, setWidth] = useState(320);
+  const [height, setHeight] = useState(320);
 
   useEffect(() => {
     contextRef.current = canvasRef.current?.getContext("2d")!;
@@ -25,7 +26,7 @@ function App() {
     const renderer = rendererRef.current;
     if (context && renderer) {
       context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-      renderer.drawText(text, fontSize, fontSize * 1.5, 32, 32, width);
+      renderer.drawText(text, fontSize, fontSize * 1.5, 32, 32, width, height);
     }
   }, [text, fontSize, width]);
 
@@ -59,6 +60,15 @@ function App() {
             type="number"
             value={width}
             onChange={(e) => setWidth(parseInt(e.target.value))}
+          />
+        </label>
+        <label className="flex flex-col">
+          <span className="text-sm text-gray-500">Height</span>
+          <input
+            className="border border-gray-300 p-1 rounded w-40"
+            type="number"
+            value={height}
+            onChange={(e) => setHeight(parseInt(e.target.value))}
           />
         </label>
       </div>
