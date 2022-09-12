@@ -143,14 +143,24 @@ impl TextRenderer {
                 let glyph = glyph_buffer.glyph_infos()[i];
                 let pos = glyph_buffer.glyph_positions()[i];
 
+                let char = span[(glyph.cluster as usize)..].chars().next().unwrap();
+                info!("char: {}", char);
+
+                let glyph_id = ttf_parser::GlyphId(glyph.glyph_id as u16);
+
+                let vertical_orientation = unicode_vo::char_orientation(char);
+
                 self.context.save();
                 self.context.translate(pos_x, pos_y + font_size);
+                if vertical && vertical_orientation == unicode_vo::Orientation::Rotated {
+                    self.context.rotate(std::f64::consts::FRAC_PI_2);
+                }
                 self.context.scale(1.0, -1.0);
 
                 self.context.begin_path();
 
                 self.font_face.outline_glyph(
-                    ttf_parser::GlyphId(glyph.glyph_id as u16),
+                    glyph_id,
                     &mut TestOutlineBuilder {
                         context: &self.context,
                         scale,
@@ -160,8 +170,25 @@ impl TextRenderer {
                 self.context.fill();
                 self.context.restore();
 
-                pos_x += pos.x_advance as f64 * scale;
-                pos_y -= pos.y_advance as f64 * scale;
+                if vertical {
+                    if vertical_orientation == unicode_vo::Orientation::Rotated {
+                        pos_y +=
+                            self.font_face.glyph_hor_advance(glyph_id).unwrap_or(0) as f64 * scale;
+                    } else {
+                        pos_y +=
+                            self.font_face.glyph_ver_advance(glyph_id).unwrap_or(0) as f64 * scale;
+                    }
+                } else {
+                    pos_x += self.font_face.glyph_hor_advance(glyph_id).unwrap_or(0) as f64 * scale;
+                }
+
+                // if vertical && vertical_orientation == unicode_vo::Orientation::Rotated {
+                //     pos_y += pos.x_advance as f64 * scale;
+                //     pos_x -= pos.y_advance as f64 * scale;
+                // } else {
+                //     pos_x += pos.x_advance as f64 * scale;
+                //     pos_y -= pos.y_advance as f64 * scale;
+                // }
             }
 
             if break_type == unicode_linebreak::BreakOpportunity::Mandatory {
