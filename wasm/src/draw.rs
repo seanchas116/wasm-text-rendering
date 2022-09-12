@@ -152,10 +152,13 @@ impl TextRenderer {
 
                 self.context.save();
                 self.context.translate(pos_x, pos_y + font_size);
-                if vertical && vertical_orientation == unicode_vo::Orientation::Rotated {
-                    self.context.rotate(std::f64::consts::FRAC_PI_2);
-                }
                 self.context.scale(1.0, -1.0);
+                if vertical && vertical_orientation == unicode_vo::Orientation::Rotated {
+                    self.context.rotate(-std::f64::consts::FRAC_PI_2);
+                    self.context.translate(-font_size, 0.0);
+                }
+
+                self.context.scale(scale, scale);
 
                 self.context.begin_path();
 
@@ -163,7 +166,7 @@ impl TextRenderer {
                     glyph_id,
                     &mut TestOutlineBuilder {
                         context: &self.context,
-                        scale,
+                        scale: 1.0,
                     },
                 );
 
