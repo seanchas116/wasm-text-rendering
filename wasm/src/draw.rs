@@ -69,9 +69,18 @@ impl TextRenderer {
         width: f64,
         height: f64,
     ) {
-        self.context.save();
+        info!(
+            "ascender: {}, descender: {}, units_per_em: {}",
+            self.font_face.ascender(),
+            self.font_face.descender(),
+            self.font_face.units_per_em()
+        );
 
+        let center = (self.font_face.ascender() as f64 + self.font_face.descender() as f64) * 0.5;
+        let center_offset = self.font_face.units_per_em() as f64 * 0.5 - center;
         let scale = font_size / self.font_face.units_per_em() as f64;
+
+        self.context.save();
 
         if vertical {
             self.context.translate(x + width, y);
@@ -132,7 +141,6 @@ impl TextRenderer {
                 let pos = glyph_buffer.glyph_positions()[i];
 
                 let char = span[(glyph.cluster as usize)..].chars().next().unwrap();
-                info!("char: {}", char);
 
                 let glyph_id = ttf_parser::GlyphId(glyph.glyph_id as u16);
 
@@ -144,11 +152,11 @@ impl TextRenderer {
                 self.context.scale(1.0, -1.0);
                 if vertical && vertical_orientation == unicode_vo::Orientation::Rotated {
                     self.context.rotate(-std::f64::consts::FRAC_PI_2);
-                    self.context.translate(
-                        -(self.font_face.units_per_em() as f64),
-                        -(self.font_face.descender() as f64),
-                    );
+                    self.context
+                        .translate(-(self.font_face.units_per_em() as f64), 0.0);
                 }
+
+                self.context.translate(0.0, center_offset);
 
                 self.context.begin_path();
 
