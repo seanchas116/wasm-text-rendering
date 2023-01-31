@@ -6,7 +6,7 @@
   "scripts": {
     "build": "run-s build:wasm build:js",
     "build:js": "tsc && vite build",
-    "build:wasm": "cd wasm && wasm-pack build --target web --release",
+    "build:wasm": "cd wasm && wasm-pack build --target web --debug",
     "dev": "vite",
     "preview": "vite preview"
   },
